@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_day/Login.dart';
-import 'package:my_day/Welcome.dart';
+import 'package:my_day/User.dart';
+import 'package:my_day/UserAPI.dart';
 
 import 'HomePage.dart';
 import 'ThemeData.dart';
@@ -21,34 +22,45 @@ class _SignUpPageState extends State<SignUpPage> {
   TextEditingController password = TextEditingController();
   TextEditingController cPassword = TextEditingController();
 
-  handleSignUp(BuildContext context) {
+  handleSignUp(BuildContext context) async {
     _disableButtons();
 
     print('signup clicked');
-
-    if (username.text == null || username.text == "") {
-      _showToast(context, "Username is empty");
-      _enableButtons();
-    } else if (password.text == null || password.text == "") {
-      _showToast(context, "Password is empty");
-      _enableButtons();
-    } else if (cPassword.text == null || cPassword.text == "") {
-      _showToast(context, "Confirm password is empty");
-      _enableButtons();
-    } else if (password.text != cPassword.text) {
-      _showToast(context, "Password and confirm password does't match");
-      _enableButtons();
-    } else {
-      print(username.text);
-      print(password.text);
-      print(cPassword.text);
-      _enableButtons();
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => HomePage(username: username.text)),
-      );
+    try {
+      if (username.text == null || username.text == "") {
+        _showToast(context, "Username is empty");
+      } else if (password.text == null || password.text == "") {
+        _showToast(context, "Password is empty");
+      } else if (cPassword.text == null || cPassword.text == "") {
+        _showToast(context, "Confirm password is empty");
+      } else if (password.text != cPassword.text) {
+        _showToast(context, "Password and confirm password does't match");
+      } else {
+        var user = new User(username: username.text, password: password.text);
+        bool status = await addUser(collectionName, user);
+        if (status) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => HomePage(username: username.text)),
+          );
+        } else {
+          _showToast(
+              context, "Username exists. Please choose a different username");
+        }
+      }
+    } catch (e) {
+      print(e.toString());
     }
+    _enableButtons();
+  }
+
+  handleGoogleSignUp(BuildContext context) async {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => HomePage(username: 'Google User')),
+    );
   }
 
   _disableButtons() {
@@ -117,37 +129,36 @@ class _SignUpPageState extends State<SignUpPage> {
             ),
             SizedBox(height: 70),
             SizedBox(height: 10),
-            Container(
-                height: buttonHeight,
-                width: buttonWidth,
-                child: RawMaterialButton(
-                  fillColor: Colors.white,
-                  splashColor: Colors.grey,
-                  textStyle: TextStyle(color: Colors.white),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Image(
-                        image: AssetImage('graphics/google.webp'),
-                        height: 20.0,
-                        width: 20.0,
-                      ),
-                      SizedBox(width: 7),
-                      Text('SignUp with google',
-                          style: TextStyle(
-                              color: Colors.black.withOpacity(0.6),
-                              height: 1.2)),
-                    ],
-                  ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => HomePage()),
-                    );
-                  },
-                  shape: new RoundedRectangleBorder(
-                      borderRadius: new BorderRadius.circular(30.0)),
-                )),
+            Builder(builder: (BuildContext context) {
+              return new Container(
+                  height: buttonHeight,
+                  width: buttonWidth,
+                  child: RawMaterialButton(
+                    fillColor: Colors.white,
+                    splashColor: Colors.grey,
+                    textStyle: TextStyle(color: Colors.white),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Image(
+                          image: AssetImage('graphics/google.webp'),
+                          height: 20.0,
+                          width: 20.0,
+                        ),
+                        SizedBox(width: 7),
+                        Text('SignUp with google',
+                            style: TextStyle(
+                                color: Colors.black.withOpacity(0.6),
+                                height: 1.2)),
+                      ],
+                    ),
+                    onPressed: () {
+                      handleGoogleSignUp(context);
+                    },
+                    shape: new RoundedRectangleBorder(
+                        borderRadius: new BorderRadius.circular(30.0)),
+                  ));
+            }),
             SizedBox(height: 15),
             Text(
               'OR',

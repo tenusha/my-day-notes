@@ -1,14 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class User {
-  String name;
+  String username;
   String password;
   DocumentReference reference;
 
-  User({this.name});
+  User({this.username, this.password});
 
   User.fromMap(Map<String, dynamic> map, {this.reference}) {
-    name = map["name"];
+    username = map["username"];
     password = map["password"];
   }
 
@@ -16,6 +16,6 @@ class User {
       : this.fromMap(snapshot.data, reference: snapshot.reference);
 
   toJson() {
-    return {'name': name, 'password': password};
+    return {'username': username, 'password': password};
   }
 }

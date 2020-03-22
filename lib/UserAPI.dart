@@ -7,24 +7,58 @@ getUsers(String collectionName) {
   return Firestore.instance.collection(collectionName).snapshots();
 }
 
-addUser(String collectionName, TextEditingController controller) {
-  User user = User(name: controller.text);
+getUser(String collectionName, String username) {
+  return Firestore.instance
+      .collection(collectionName)
+      .where('username', isEqualTo: username)
+      .getDocuments()
+      .then((QuerySnapshot docs) {
+    print('getUser()');
+    if (docs.documents.isEmpty) {
+      print('No existing user');
+      return null;
+    } else {
+      print('existing user found');
+      return docs.documents[0];
+    }
+  });
+}
+
+addUser(String collectionName, User user) async {
+
+  bool status = false;
+
   try {
-    Firestore.instance.runTransaction((Transaction transaction) async {
-      await Firestore.instance
-          .collection(collectionName)
-          .document()
-          .setData(user.toJson());
+    status = await Firestore.instance
+        .collection(collectionName)
+        .where('username', isEqualTo: user.username)
+        .getDocuments()
+        .then((QuerySnapshot docs) {
+          print('addUser()');
+      if (docs.documents.isEmpty) {
+        print('No existing user');
+        Firestore.instance.runTransaction((Transaction transaction) async {
+          await Firestore.instance
+              .collection(collectionName)
+              .document()
+              .setData(user.toJson());
+        });
+        return true;
+      } else {
+        print('existing user found');
+        return false;
+      }
     });
   } catch (e) {
     print(e.toString());
   }
+  return status;
 }
 
 update(User user, String newName) {
   try {
     Firestore.instance.runTransaction((transaction) async {
-      await transaction.update(user.reference, {'name': newName});
+      await transaction.update(user.reference, {'username': newName});
     });
   } catch (e) {
     print(e.toString());

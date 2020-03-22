@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_day/AddNote.dart';
 import 'package:my_day/ThemeData.dart';
 
 import 'Login.dart';
@@ -13,14 +14,26 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('My Day'),
         backgroundColor: themeColor,
+        actions: [
+          IconButton(
+            icon:Icon(Icons.add),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AddNotePage(username: widget.username),
+                ),
+              );
+            },
+          ),
+          SizedBox(width: 10),
+        ],
       ),
       drawer: Drawer(
         child: ListView(
@@ -58,7 +71,7 @@ class _HomePageState extends State<HomePage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => LoginPage(),
+                    builder: (context) => AddNotePage(username: widget.username),
                   ),
                 );
               },
@@ -74,7 +87,7 @@ class _HomePageState extends State<HomePage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => LoginPage(),
+                    builder: (context) => HomePage(username: widget.username,),
                   ),
                 );
               },
@@ -97,10 +110,10 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
-      body: Column(
-        children: <Widget>[
-
-        ],
+      body: SingleChildScrollView(
+        child: Column(
+          children: <Widget>[],
+        ),
       ),
     );
   }
