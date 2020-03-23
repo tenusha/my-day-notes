@@ -79,6 +79,7 @@ class _LoginPageState extends State<LoginPage> {
         prefs.setString('username', googleUser.email);
         prefs.setString('displayName', snapshot.data['displayName']);
         prefs.setInt('password', snapshot.data['password']);
+        prefs.setString('imageUrl', googleUser.photoUrl);
 
         // Navigate to Home Page
         Navigator.push(

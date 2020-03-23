@@ -87,6 +87,7 @@ class _SignUpPageState extends State<SignUpPage> {
         prefs.setString('username', googleUser.email);
         prefs.setString('displayName', googleUser.displayName);
         prefs.setInt('password', googleUser.email.hashCode);
+        prefs.setString('imageUrl', googleUser.photoUrl);
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => HomePage()),

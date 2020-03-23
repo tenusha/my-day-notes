@@ -21,6 +21,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
   int password = 0;
   String collectionName = "Users";
   User userObj;
+  String imageUrl;
 
   bool enableUpdateButton = true;
 
@@ -40,6 +41,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
     final user = prefs.getString('username') ?? null;
     final displayUser = prefs.getString('displayName') ?? null;
     final pass = prefs.getInt('password') ?? 0;
+    final img = prefs.getString('imageUrl') ?? null;
     if (user != null) {
       DocumentSnapshot snapshot = await getUser(collectionName, user);
       setState(() {
@@ -47,6 +49,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
         displayName = displayUser;
         password = pass;
         userObj = User.fromSnapshot(snapshot);
+        imageUrl = img;
       });
       displayNameController = TextEditingController(text: displayUser);
     } else {
@@ -136,7 +139,9 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                     SizedBox(height: 20),
                     new CircleAvatar(
                       radius: 50.0,
-                      backgroundImage: AssetImage('graphics/user_inverse.png'),
+                      backgroundImage: imageUrl == null
+                          ? AssetImage('graphics/user_inverse.png')
+                          : NetworkImage(imageUrl),
                       backgroundColor: Colors.transparent,
                     ),
                     SizedBox(height: 20),

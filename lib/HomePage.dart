@@ -21,6 +21,7 @@ class _HomePageState extends State<HomePage> {
   String username = "";
   String displayName = "";
   String collectionName = "Notes";
+  String imageUrl;
 
   @override
   void initState() {
@@ -32,10 +33,12 @@ class _HomePageState extends State<HomePage> {
     final prefs = await SharedPreferences.getInstance();
     final user = prefs.getString('username') ?? null;
     final displayUser = prefs.getString('displayName') ?? null;
+    final img = prefs.getString('imageUrl') ?? null;
     if (user != null) {
       setState(() {
         username = user;
         displayName = displayUser != null ? displayUser : user;
+        imageUrl = img;
       });
     } else {
       Navigator.push(
@@ -116,7 +119,9 @@ class _HomePageState extends State<HomePage> {
                     SizedBox(height: 20),
                     new CircleAvatar(
                       radius: 50.0,
-                      backgroundImage: AssetImage('graphics/user.png'),
+                      backgroundImage: imageUrl == null
+                          ? AssetImage('graphics/user.png')
+                          : NetworkImage(imageUrl),
                       backgroundColor: Colors.transparent,
                     ),
                     SizedBox(height: 20),
@@ -186,7 +191,8 @@ class _HomePageState extends State<HomePage> {
                 final prefs = await SharedPreferences.getInstance();
                 prefs.remove('username');
                 prefs.remove('displayName');
-
+                prefs.remove('password');
+                prefs.remove('imageUrl');
                 Navigator.push(
                   context,
                   MaterialPageRoute(
