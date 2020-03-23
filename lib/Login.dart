@@ -33,7 +33,7 @@ class _LoginPageState extends State<LoginPage> {
             await getUser(collectionName, username.text);
         if (snapshot == null) {
           _showToast(context, "User does not exists");
-        } else if (password.text == snapshot.data['password']) {
+        } else if (password.text.hashCode == snapshot.data['password']) {
           // Store username on disk
           final prefs = await SharedPreferences.getInstance();
           prefs.setString('username', username.text);

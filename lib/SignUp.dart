@@ -35,7 +35,7 @@ class _SignUpPageState extends State<SignUpPage> {
       } else if (password.text != cPassword.text) {
         _showToast(context, "Password and confirm password does't match");
       } else {
-        var user = new User(username: username.text, password: password.text);
+        var user = new User(username: username.text, password: password.text.hashCode);
         bool status = await addUser(collectionName, user);
         if (status) {
           final prefs = await SharedPreferences.getInstance();
