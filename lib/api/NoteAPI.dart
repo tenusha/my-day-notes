@@ -6,6 +6,7 @@ getNotes(String collectionName, String username) {
   return Firestore.instance
       .collection(collectionName)
       .where('username', isEqualTo: username)
+      .orderBy('timestamp', descending: true)
       .snapshots();
 }
 
