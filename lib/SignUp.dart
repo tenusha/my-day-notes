@@ -76,9 +76,11 @@ class _SignUpPageState extends State<SignUpPage> {
 
       final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
 
+      int hashedPassword = googleUser.id.hashCode;
+
       var user = new User(
           username: googleUser.email,
-          password: googleUser.email.hashCode,
+          password: hashedPassword,
           displayName: googleUser.displayName);
       bool status = await addUser(collectionName, user);
 
@@ -86,7 +88,7 @@ class _SignUpPageState extends State<SignUpPage> {
         final prefs = await SharedPreferences.getInstance();
         prefs.setString('username', googleUser.email);
         prefs.setString('displayName', googleUser.displayName);
-        prefs.setInt('password', googleUser.email.hashCode);
+        prefs.setInt('password', hashedPassword);
         prefs.setString('imageUrl', googleUser.photoUrl);
         Navigator.push(
           context,

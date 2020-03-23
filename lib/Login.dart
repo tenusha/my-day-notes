@@ -34,6 +34,10 @@ class _LoginPageState extends State<LoginPage> {
       } else {
         DocumentSnapshot snapshot =
             await getUser(collectionName, username.text);
+
+        print(password.text);
+        print(password.text.hashCode);
+        print(snapshot.data['password']);
         if (snapshot == null) {
           _showToast(context, "User does not exists");
         } else if (password.text.hashCode == snapshot.data['password']) {
@@ -68,12 +72,14 @@ class _LoginPageState extends State<LoginPage> {
 
       final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
 
+      int hashedPassword = googleUser.id.hashCode;
+
       DocumentSnapshot snapshot =
           await getUser(collectionName, googleUser.email);
 
       if (snapshot == null) {
         _showToast(context, "User does not exists. please sign in");
-      } else if (googleUser.email.hashCode == snapshot.data['password']) {
+      } else if (hashedPassword == snapshot.data['password']) {
         // Store username on disk
         final prefs = await SharedPreferences.getInstance();
         prefs.setString('username', googleUser.email);
