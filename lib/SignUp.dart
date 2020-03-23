@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:my_day/Login.dart';
 import 'package:my_day/model/User.dart';
 import 'package:my_day/api/UserAPI.dart';
@@ -6,6 +7,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'HomePage.dart';
 import 'config/ThemeData.dart';
+
+GoogleSignIn _googleSignIn = GoogleSignIn();
 
 class SignUpPage extends StatefulWidget {
   @override
@@ -64,12 +67,37 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   handleGoogleSignUp(BuildContext context) async {
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setString('username', 'Google User');
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => HomePage()),
-    );
+    try {
+      bool isSignedIn = await _googleSignIn.isSignedIn();
+
+      if (isSignedIn) {
+        await _googleSignIn.signOut();
+      }
+
+      final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
+
+      var user = new User(
+          username: googleUser.email,
+          password: googleUser.email.hashCode,
+          displayName: googleUser.displayName);
+      bool status = await addUser(collectionName, user);
+
+      if (status) {
+        final prefs = await SharedPreferences.getInstance();
+        prefs.setString('username', googleUser.email);
+        prefs.setString('displayName', googleUser.displayName);
+        prefs.setInt('password', googleUser.email.hashCode);
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => HomePage()),
+        );
+      } else {
+        _showToast(context,
+            "User already signed in. Please login or choose a different account");
+      }
+    } catch (e) {
+      print(e.toString());
+    }
   }
 
   _disableButtons() {

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:my_day/HomePage.dart';
 import 'package:my_day/SignUp.dart';
 import 'package:my_day/api/UserAPI.dart';
@@ -7,6 +8,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'config/ThemeData.dart';
 import 'model/User.dart';
+
+GoogleSignIn _googleSignIn = GoogleSignIn();
 
 class LoginPage extends StatefulWidget {
   @override
@@ -56,12 +59,38 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   handleGoogleLogIn(BuildContext context) async {
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setString('username', 'Google User');
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => HomePage()),
-    );
+    try {
+      bool isSignedIn = await _googleSignIn.isSignedIn();
+
+      if (isSignedIn) {
+        await _googleSignIn.signOut();
+      }
+
+      final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
+
+      DocumentSnapshot snapshot =
+          await getUser(collectionName, googleUser.email);
+
+      if (snapshot == null) {
+        _showToast(context, "User does not exists. please sign in");
+      } else if (googleUser.email.hashCode == snapshot.data['password']) {
+        // Store username on disk
+        final prefs = await SharedPreferences.getInstance();
+        prefs.setString('username', googleUser.email);
+        prefs.setString('displayName', snapshot.data['displayName']);
+        prefs.setInt('password', snapshot.data['password']);
+
+        // Navigate to Home Page
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => HomePage()),
+        );
+      } else {
+        _showToast(context, "authentication invalid");
+      }
+    } catch (e) {
+      print(e.toString());
+    }
   }
 
   _disableButtons() {

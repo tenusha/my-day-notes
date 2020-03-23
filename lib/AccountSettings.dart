@@ -141,7 +141,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                     ),
                     SizedBox(height: 20),
                     Text(
-                      displayName,
+                      username,
                       style: TextStyle(color: themeColor),
                     ),
                     SizedBox(height: 20),
