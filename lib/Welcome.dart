@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_day/HomePage.dart';
-import 'package:my_day/ThemeData.dart';
+import 'package:my_day/config/ThemeData.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'Login.dart';
 import 'SignUp.dart';

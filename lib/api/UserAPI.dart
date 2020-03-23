@@ -52,10 +52,10 @@ addUser(String collectionName, User user) async {
   return status;
 }
 
-updateUser(User user, String newName) {
+updateUser(User user, var newUser) {
   try {
     Firestore.instance.runTransaction((transaction) async {
-      await transaction.update(user.reference, {'username': newName});
+      await transaction.update(user.reference, newUser);
     });
   } catch (e) {
     print(e.toString());

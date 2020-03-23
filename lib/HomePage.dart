@@ -2,9 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:intl/intl.dart';
+import 'package:my_day/AccountSettings.dart';
 import 'package:my_day/AddNote.dart';
 import 'package:my_day/EditNote.dart';
-import 'package:my_day/ThemeData.dart';
+import 'package:my_day/config/ThemeData.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Login.dart';
@@ -155,6 +156,25 @@ class _HomePageState extends State<HomePage> {
                   ),
                 );
               },
+            ),
+            ListTile(
+              leading: Image(
+                height: 28,
+                image: AssetImage('graphics/settings.png'),
+              ),
+              title:
+                  Text('Account settings', style: TextStyle(color: themeColor)),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AccountSettingsPage(),
+                  ),
+                );
+              },
+            ),
+            SizedBox(
+              height: 10,
             ),
             ListTile(
               leading: Image(

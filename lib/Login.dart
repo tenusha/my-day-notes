@@ -5,7 +5,7 @@ import 'package:my_day/SignUp.dart';
 import 'package:my_day/api/UserAPI.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'ThemeData.dart';
+import 'config/ThemeData.dart';
 import 'model/User.dart';
 
 class LoginPage extends StatefulWidget {
@@ -38,6 +38,7 @@ class _LoginPageState extends State<LoginPage> {
           final prefs = await SharedPreferences.getInstance();
           prefs.setString('username', username.text);
           prefs.setString('displayName', snapshot.data['displayName']);
+          prefs.setInt('password', snapshot.data['password']);
 
           // Navigate to Home Page
           Navigator.push(

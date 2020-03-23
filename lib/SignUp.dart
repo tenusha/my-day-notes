@@ -5,7 +5,7 @@ import 'package:my_day/api/UserAPI.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'HomePage.dart';
-import 'ThemeData.dart';
+import 'config/ThemeData.dart';
 
 class SignUpPage extends StatefulWidget {
   @override
@@ -47,6 +47,7 @@ class _SignUpPageState extends State<SignUpPage> {
           final prefs = await SharedPreferences.getInstance();
           prefs.setString('username', username.text);
           prefs.setString('displayName', displayName.text);
+          prefs.setInt('password', password.text.hashCode);
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => HomePage()),
