@@ -1,6 +1,4 @@
-import 'package:flutter/cupertino.dart';
-
-import 'User.dart';
+import '../model/User.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 getUsers(String collectionName) {
@@ -25,7 +23,6 @@ getUser(String collectionName, String username) {
 }
 
 addUser(String collectionName, User user) async {
-
   bool status = false;
 
   try {
@@ -34,7 +31,7 @@ addUser(String collectionName, User user) async {
         .where('username', isEqualTo: user.username)
         .getDocuments()
         .then((QuerySnapshot docs) {
-          print('addUser()');
+      print('addUser()');
       if (docs.documents.isEmpty) {
         print('No existing user');
         Firestore.instance.runTransaction((Transaction transaction) async {

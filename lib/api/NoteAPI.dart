@@ -1,7 +1,5 @@
-import 'package:flutter/cupertino.dart';
-import 'package:my_day/Note.dart';
+import 'package:my_day/model/Note.dart';
 
-import 'User.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 getNotes(String collectionName, String username) {

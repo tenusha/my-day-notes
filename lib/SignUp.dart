@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_day/Login.dart';
-import 'package:my_day/User.dart';
-import 'package:my_day/UserAPI.dart';
+import 'package:my_day/model/User.dart';
+import 'package:my_day/api/UserAPI.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'HomePage.dart';
@@ -20,13 +20,16 @@ class _SignUpPageState extends State<SignUpPage> {
   TextEditingController username = TextEditingController();
   TextEditingController password = TextEditingController();
   TextEditingController cPassword = TextEditingController();
+  TextEditingController displayName = TextEditingController();
 
   handleSignUp(BuildContext context) async {
     _disableButtons();
 
     print('signup clicked');
     try {
-      if (username.text == null || username.text == "") {
+      if (displayName.text == null || displayName.text == "") {
+        _showToast(context, "Name is empty");
+      } else if (username.text == null || username.text == "") {
         _showToast(context, "Username is empty");
       } else if (password.text == null || password.text == "") {
         _showToast(context, "Password is empty");
@@ -35,11 +38,15 @@ class _SignUpPageState extends State<SignUpPage> {
       } else if (password.text != cPassword.text) {
         _showToast(context, "Password and confirm password does't match");
       } else {
-        var user = new User(username: username.text, password: password.text.hashCode);
+        var user = new User(
+            username: username.text,
+            password: password.text.hashCode,
+            displayName: displayName.text);
         bool status = await addUser(collectionName, user);
         if (status) {
           final prefs = await SharedPreferences.getInstance();
           prefs.setString('username', username.text);
+          prefs.setString('displayName', displayName.text);
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => HomePage()),
@@ -128,8 +135,7 @@ class _SignUpPageState extends State<SignUpPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
             ),
-            SizedBox(height: 70),
-            SizedBox(height: 10),
+            SizedBox(height: 50),
             Builder(builder: (BuildContext context) {
               return new Container(
                   height: buttonHeight,
@@ -160,12 +166,35 @@ class _SignUpPageState extends State<SignUpPage> {
                         borderRadius: new BorderRadius.circular(30.0)),
                   ));
             }),
-            SizedBox(height: 10),
+            SizedBox(height: 5),
             Text(
               'OR',
               style: TextStyle(color: Colors.white, height: 3, fontSize: 14),
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 15),
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 5)],
+              ),
+              padding: EdgeInsets.only(left: 10.0),
+              width: buttonWidth,
+              height: 42,
+              child: Theme(
+                child: TextField(
+                  controller: displayName,
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    prefixIcon: Icon(Icons.perm_identity),
+                    hintText: "Name",
+                  ),
+                  style: TextStyle(fontSize: 14),
+                ),
+                data: Theme.of(context).copyWith(primaryColor: Colors.grey),
+              ),
+            ),
+            SizedBox(height: 10),
             Container(
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -276,6 +305,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     height: 3),
               ),
             ),
+            SizedBox(height: 10),
           ]),
         ),
       ),

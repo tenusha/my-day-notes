@@ -12,6 +12,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   String username = "";
+  String displayName = "";
 
   @override
   void initState() {
@@ -22,9 +23,11 @@ class _HomePageState extends State<HomePage> {
   _initiate() async {
     final prefs = await SharedPreferences.getInstance();
     final user = prefs.getString('username') ?? null;
+    final displayUser = prefs.getString('displayName') ?? null;
     if (user != null) {
       setState(() {
         username = user;
+        displayName = displayUser != null ? displayUser : user;
       });
     } else {
       Navigator.push(
@@ -76,7 +79,7 @@ class _HomePageState extends State<HomePage> {
                       backgroundColor: Colors.transparent,
                     ),
                     SizedBox(height: 20),
-                    Text(username, style: TextStyle(color: Colors.white)),
+                    Text(displayName, style: TextStyle(color: Colors.white)),
                     SizedBox(height: 20),
                   ],
                 ),
@@ -122,6 +125,7 @@ class _HomePageState extends State<HomePage> {
               onTap: () async {
                 final prefs = await SharedPreferences.getInstance();
                 prefs.remove('username');
+                prefs.remove('displayName');
 
                 Navigator.push(
                   context,

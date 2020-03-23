@@ -2,11 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:my_day/HomePage.dart';
 import 'package:my_day/SignUp.dart';
-import 'package:my_day/UserAPI.dart';
+import 'package:my_day/api/UserAPI.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'ThemeData.dart';
-import 'User.dart';
+import 'model/User.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -37,6 +37,7 @@ class _LoginPageState extends State<LoginPage> {
           // Store username on disk
           final prefs = await SharedPreferences.getInstance();
           prefs.setString('username', username.text);
+          prefs.setString('displayName', snapshot.data['displayName']);
 
           // Navigate to Home Page
           Navigator.push(

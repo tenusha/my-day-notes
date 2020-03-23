@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_day/Login.dart';
-import 'package:my_day/Note.dart';
-import 'package:my_day/NoteAPI.dart';
+import 'package:my_day/model/Note.dart';
+import 'package:my_day/api/NoteAPI.dart';
 import 'package:my_day/ThemeData.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
