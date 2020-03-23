@@ -1,9 +1,35 @@
 import 'package:flutter/material.dart';
+import 'package:my_day/HomePage.dart';
 import 'package:my_day/ThemeData.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'Login.dart';
 import 'SignUp.dart';
 
-class WelcomePage extends StatelessWidget {
+class WelcomePage extends StatefulWidget {
+  @override
+  _WelcomePageState createState() => _WelcomePageState();
+}
+
+class _WelcomePageState extends State<WelcomePage> {
+  @override
+  void initState() {
+    _initiate();
+    super.initState();
+  }
+
+  _initiate() async {
+    final prefs = await SharedPreferences.getInstance();
+    final user = prefs.getString('username') ?? null;
+    if (user != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HomePage(),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     double buttonWidth = MediaQuery.of(context).size.width * 0.8;

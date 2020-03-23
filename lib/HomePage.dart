@@ -45,6 +45,37 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  void _showDeleteDialog(Note noteObj) {
+    // flutter defined function
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Delete Note"),
+          content: new Text(
+              "Are you sure you want to delete the selected note. This action cannot be undone"),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Yes"),
+              onPressed: () {
+                deleteNote(noteObj);
+                Navigator.of(context).pop();
+              },
+            ),
+            new FlatButton(
+              child: new Text("Cancel"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     var body = _buildBody(context);
@@ -209,7 +240,10 @@ class _HomePageState extends State<HomePage> {
                   SizedBox(height: 10),
                   Text('$note'),
                   SizedBox(height: 10),
-                  Text('$date', style: TextStyle(fontSize: 12),),
+                  Text(
+                    '$date',
+                    style: TextStyle(fontSize: 12),
+                  ),
                   SizedBox(height: 10),
                 ],
               ),
@@ -231,7 +265,7 @@ class _HomePageState extends State<HomePage> {
             caption: 'Delete',
             color: Colors.red,
             icon: Icons.delete,
-            onTap: () => deleteNote(noteObj),
+            onTap: () => _showDeleteDialog(noteObj),
           ),
         ],
       ),
