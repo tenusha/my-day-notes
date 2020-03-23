@@ -1,9 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:intl/intl.dart';
 import 'package:my_day/AddNote.dart';
 import 'package:my_day/ThemeData.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Login.dart';
+import 'api/NoteAPI.dart';
+import 'model/Note.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -13,6 +18,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   String username = "";
   String displayName = "";
+  String collectionName = "Notes";
 
   @override
   void initState() {
@@ -41,6 +47,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    var body = _buildBody(context);
+
     return Scaffold(
       appBar: AppBar(
         title: Text('My Day'),
@@ -138,11 +146,103 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: <Widget>[],
+      body: Container(
+          width: MediaQuery.of(context).size.width,
+          child: Column(
+            children: <Widget>[
+              Expanded(
+                  child: body == null
+                      ? Text(
+                          "You don't have any notes yet",
+                          style: TextStyle(color: Colors.grey),
+                        )
+                      : body)
+            ],
+          )),
+    );
+  }
+
+  Widget _buildBody(BuildContext context) {
+    return StreamBuilder<QuerySnapshot>(
+        stream: getNotes(collectionName, username),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) return LinearProgressIndicator();
+          return _buildList(context, snapshot.data.documents);
+        });
+  }
+
+  Widget _buildList(BuildContext context, List<DocumentSnapshot> snapshot) {
+    return ListView(
+      padding: const EdgeInsets.only(top: 10.0),
+      children: snapshot.map((data) => _buildListItem(context, data)).toList(),
+    );
+  }
+
+  Widget _buildListItem(BuildContext context, DocumentSnapshot data) {
+    print('test _buildListItem');
+    final noteObj = Note.fromSnapshot(data);
+
+    String note = noteObj.note.replaceAll('\n', ' ');
+    if (note.length > 100) {
+      note = note.substring(0, 100) + '...';
+    }
+
+    String subject = noteObj.subject;
+    var formatter = new DateFormat('dd MMM yyyy hh:mm:ss a');
+    String date = formatter.format(
+        new DateTime.fromMicrosecondsSinceEpoch(noteObj.timestamp * 1000));
+
+    return Container(
+      margin: EdgeInsets.only(bottom: 5),
+      child: Slidable(
+        actionPane: SlidableDrawerActionPane(),
+        actionExtentRatio: 0.25,
+        child: GestureDetector(
+          onTap: () => print('$subject'),
+          child: Container(
+            color: Colors.white,
+            child: ListTile(
+              title: Text('$subject', style: TextStyle(height: 1.5)),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  SizedBox(height: 10),
+                  Text('$note'),
+                  SizedBox(height: 10),
+                  Text('$date', style: TextStyle(fontSize: 12),),
+                  SizedBox(height: 10),
+                ],
+              ),
+            ),
+          ),
         ),
+        actions: <Widget>[
+          IconSlideAction(
+            iconWidget: Icon(
+              Icons.edit,
+              color: Colors.white,
+            ),
+            color: themeColor,
+            onTap: () => {},
+          ),
+        ],
+        secondaryActions: <Widget>[
+          IconSlideAction(
+            caption: 'Delete',
+            color: Colors.red,
+            icon: Icons.delete,
+            onTap: () => deleteNote(noteObj),
+          ),
+        ],
       ),
     );
+
+//    return Column(
+//      children: <Widget>[
+//        Text('$note'),
+//        Text('$subject'),
+//        Text('$date'),
+//      ],
+//    );
   }
 }

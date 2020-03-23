@@ -52,7 +52,7 @@ addUser(String collectionName, User user) async {
   return status;
 }
 
-update(User user, String newName) {
+updateUser(User user, String newName) {
   try {
     Firestore.instance.runTransaction((transaction) async {
       await transaction.update(user.reference, {'username': newName});
@@ -62,7 +62,7 @@ update(User user, String newName) {
   }
 }
 
-delete(User user) {
+deleteUser(User user) {
   Firestore.instance.runTransaction((Transaction transaction) async {
     await transaction.delete(user.reference);
   });

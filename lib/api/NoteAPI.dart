@@ -6,17 +6,7 @@ getNotes(String collectionName, String username) {
   return Firestore.instance
       .collection(collectionName)
       .where('username', isEqualTo: username)
-      .getDocuments()
-      .then((QuerySnapshot docs) {
-    print('getNotes()');
-    if (docs.documents.isEmpty) {
-      print('No existing notes');
-      return null;
-    } else {
-      print('existing notes found');
-      return docs.documents;
-    }
-  });
+      .snapshots();
 }
 
 addNote(String collectionName, Note note) async {
@@ -34,7 +24,7 @@ addNote(String collectionName, Note note) async {
   return true;
 }
 
-update(Note note, Note newNote) {
+updateNote(Note note, Note newNote) {
   try {
     Firestore.instance.runTransaction((transaction) async {
       await transaction.update(note.reference, newNote.toJson());
@@ -44,7 +34,7 @@ update(Note note, Note newNote) {
   }
 }
 
-delete(Note note) {
+deleteNote(Note note) {
   Firestore.instance.runTransaction((Transaction transaction) async {
     await transaction.delete(note.reference);
   });
