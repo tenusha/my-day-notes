@@ -4,6 +4,7 @@ import 'package:my_day/Login.dart';
 import 'package:my_day/model/Note.dart';
 import 'package:my_day/api/NoteAPI.dart';
 import 'package:my_day/ThemeData.dart';
+import 'package:share/share.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class EditNotePage extends StatefulWidget {
@@ -20,6 +21,7 @@ class _EditNotePageState extends State<EditNotePage> {
   String collectionName = 'Notes';
   Note noteState;
   bool enableSaveIcon = true;
+  bool enableDeleteIcon = true;
   TextEditingController subject;
   TextEditingController note;
 
@@ -67,12 +69,7 @@ class _EditNotePageState extends State<EditNotePage> {
           'timestamp': new DateTime.now().millisecondsSinceEpoch
         };
         updateNote(noteState, noteObj);
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => HomePage(),
-          ),
-        );
+        Navigator.of(context).pop();
       }
     } catch (e) {
       print(e.toString());
@@ -86,13 +83,51 @@ class _EditNotePageState extends State<EditNotePage> {
   _disableButtons() {
     setState(() {
       enableSaveIcon = false;
+      enableDeleteIcon = false;
     });
   }
 
   _enableButtons() {
     setState(() {
       enableSaveIcon = true;
+      enableDeleteIcon = true;
     });
+  }
+
+  void _showDeleteDialog(Note noteObj) {
+    // flutter defined function
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Delete Note"),
+          content: new Text(
+              "Are you sure you want to delete the selected note. This action cannot be undone"),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Yes"),
+              onPressed: () {
+                deleteNote(noteObj);
+                Navigator.of(context).pop();
+                _closePage(this.context);
+              },
+            ),
+            new FlatButton(
+              child: new Text("Cancel"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  _closePage(BuildContext context) {
+    Navigator.of(context).pop();
   }
 
   void _showToast(BuildContext context, String text) {
@@ -110,13 +145,31 @@ class _EditNotePageState extends State<EditNotePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Add Note", style: TextStyle(color: Colors.white)),
+        title: Text("Edit Note", style: TextStyle(color: Colors.white)),
         centerTitle: false,
         backgroundColor: themeColor,
         iconTheme: IconThemeData(
           color: Colors.white,
         ),
         actions: [
+          Builder(builder: (BuildContext context) {
+            return new IconButton(
+              icon: Icon(Icons.share),
+              onPressed: () {
+                Share.share(note.text, subject: subject.text);
+              },
+            );
+          }),
+          Builder(builder: (BuildContext context) {
+            return new IconButton(
+              icon: Icon(Icons.delete),
+              onPressed: () {
+                enableDeleteIcon
+                    ? _showDeleteDialog(noteState)
+                    : print('disabled');
+              },
+            );
+          }),
           Builder(builder: (BuildContext context) {
             return new IconButton(
               icon: Icon(Icons.save),
