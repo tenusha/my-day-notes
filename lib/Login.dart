@@ -3,13 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:my_day/HomePage.dart';
 import 'package:my_day/SignUp.dart';
 import 'package:my_day/UserAPI.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'ThemeData.dart';
 import 'User.dart';
 
 class LoginPage extends StatefulWidget {
-  LoginPage() : super();
-
   @override
   _LoginPageState createState() => _LoginPageState();
 }
@@ -30,15 +29,19 @@ class _LoginPageState extends State<LoginPage> {
       } else if (password.text == null || password.text == "") {
         _showToast(context, "Password is empty");
       } else {
-        var user = new User(username: username.text, password: password.text);
         DocumentSnapshot snapshot =
             await getUser(collectionName, username.text);
+        if (snapshot == null) {
+          _showToast(context, "User does not exists");
+        } else if (password.text == snapshot.data['password']) {
+          // Store username on disk
+          final prefs = await SharedPreferences.getInstance();
+          prefs.setString('username', username.text);
 
-        if (password.text == snapshot.data['password']) {
+          // Navigate to Home Page
           Navigator.push(
             context,
-            MaterialPageRoute(
-                builder: (context) => HomePage(username: username.text)),
+            MaterialPageRoute(builder: (context) => HomePage()),
           );
         } else {
           _showToast(context, "Incorrect password");
@@ -51,10 +54,11 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   handleGoogleLogIn(BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('username', 'Google User');
     Navigator.push(
       context,
-      MaterialPageRoute(
-          builder: (context) => HomePage(username: 'Google User')),
+      MaterialPageRoute(builder: (context) => HomePage()),
     );
   }
 
@@ -152,12 +156,12 @@ class _LoginPageState extends State<LoginPage> {
                         borderRadius: new BorderRadius.circular(30.0)),
                   ));
             }),
-            SizedBox(height: 15),
+            SizedBox(height: 10),
             Text(
               'OR',
               style: TextStyle(color: Colors.white, height: 3, fontSize: 14),
             ),
-            SizedBox(height: 15),
+            SizedBox(height: 20),
             Container(
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -221,7 +225,9 @@ class _LoginPageState extends State<LoginPage> {
                       ],
                     ),
                     onPressed: () {
-                      handleLoginPress(context);
+                      enableLogInButton
+                          ? handleLoginPress(context)
+                          : print("disabled");
                     },
                     shape: new RoundedRectangleBorder(
                         borderRadius: new BorderRadius.circular(30.0)),

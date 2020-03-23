@@ -2,13 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:my_day/Login.dart';
 import 'package:my_day/User.dart';
 import 'package:my_day/UserAPI.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'HomePage.dart';
 import 'ThemeData.dart';
 
 class SignUpPage extends StatefulWidget {
-  SignUpPage() : super();
-
   @override
   _SignUpPageState createState() => _SignUpPageState();
 }
@@ -39,10 +38,11 @@ class _SignUpPageState extends State<SignUpPage> {
         var user = new User(username: username.text, password: password.text);
         bool status = await addUser(collectionName, user);
         if (status) {
+          final prefs = await SharedPreferences.getInstance();
+          prefs.setString('username', username.text);
           Navigator.push(
             context,
-            MaterialPageRoute(
-                builder: (context) => HomePage(username: username.text)),
+            MaterialPageRoute(builder: (context) => HomePage()),
           );
         } else {
           _showToast(
@@ -56,10 +56,11 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   handleGoogleSignUp(BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('username', 'Google User');
     Navigator.push(
       context,
-      MaterialPageRoute(
-          builder: (context) => HomePage(username: 'Google User')),
+      MaterialPageRoute(builder: (context) => HomePage()),
     );
   }
 
@@ -159,12 +160,12 @@ class _SignUpPageState extends State<SignUpPage> {
                         borderRadius: new BorderRadius.circular(30.0)),
                   ));
             }),
-            SizedBox(height: 15),
+            SizedBox(height: 10),
             Text(
               'OR',
               style: TextStyle(color: Colors.white, height: 3, fontSize: 14),
             ),
-            SizedBox(height: 15),
+            SizedBox(height: 20),
             Container(
               decoration: BoxDecoration(
                 color: Colors.white,

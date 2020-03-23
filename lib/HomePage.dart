@@ -1,19 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:my_day/AddNote.dart';
 import 'package:my_day/ThemeData.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Login.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({Key key, this.username}) : super(key: key);
-
-  final String username;
-
   @override
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
+  String username = "";
+
+  @override
+  void initState() {
+    _initiate();
+    super.initState();
+  }
+
+  _initiate() async {
+    final prefs = await SharedPreferences.getInstance();
+    final user = prefs.getString('username') ?? null;
+    if (user != null) {
+      setState(() {
+        username = user;
+      });
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => LoginPage(),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,12 +44,12 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: themeColor,
         actions: [
           IconButton(
-            icon:Icon(Icons.add),
+            icon: Icon(Icons.add),
             onPressed: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => AddNotePage(username: widget.username),
+                  builder: (context) => AddNotePage(),
                 ),
               );
             },
@@ -54,8 +76,7 @@ class _HomePageState extends State<HomePage> {
                       backgroundColor: Colors.transparent,
                     ),
                     SizedBox(height: 20),
-                    Text(widget.username,
-                        style: TextStyle(color: Colors.white)),
+                    Text(username, style: TextStyle(color: Colors.white)),
                     SizedBox(height: 20),
                   ],
                 ),
@@ -71,7 +92,7 @@ class _HomePageState extends State<HomePage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => AddNotePage(username: widget.username),
+                    builder: (context) => AddNotePage(),
                   ),
                 );
               },
@@ -87,7 +108,7 @@ class _HomePageState extends State<HomePage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => HomePage(username: widget.username,),
+                    builder: (context) => HomePage(),
                   ),
                 );
               },
@@ -98,7 +119,10 @@ class _HomePageState extends State<HomePage> {
                 image: AssetImage('graphics/log_out.png'),
               ),
               title: Text('Log out', style: TextStyle(color: themeColor)),
-              onTap: () {
+              onTap: () async {
+                final prefs = await SharedPreferences.getInstance();
+                prefs.remove('username');
+
                 Navigator.push(
                   context,
                   MaterialPageRoute(

@@ -1,21 +1,42 @@
 import 'package:flutter/material.dart';
+import 'package:my_day/Login.dart';
 import 'package:my_day/ThemeData.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AddNotePage extends StatefulWidget {
-  AddNotePage({Key key, this.username}) : super(key: key);
-
-  final String username;
-
   @override
   _AddNotePageState createState() => _AddNotePageState();
 }
 
 class _AddNotePageState extends State<AddNotePage> {
+  String username = "";
 
-  handleSaveClick(){
-    print('handleSaveClick()');
+  @override
+  void initState() {
+    _initiate();
+    super.initState();
   }
 
+  _initiate() async {
+    final prefs = await SharedPreferences.getInstance();
+    final user = prefs.getString('username') ?? null;
+    if (user != null) {
+      setState(() {
+        username = user;
+      });
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => LoginPage(),
+        ),
+      );
+    }
+  }
+
+  handleSaveClick() {
+    print('handleSaveClick()');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +51,7 @@ class _AddNotePageState extends State<AddNotePage> {
         ),
         actions: [
           IconButton(
-            icon:Icon(Icons.save),
+            icon: Icon(Icons.save),
             onPressed: () {
               handleSaveClick();
             },
@@ -42,7 +63,7 @@ class _AddNotePageState extends State<AddNotePage> {
         child: Column(
           children: <Widget>[
             Text('Add Note'),
-            Text(widget.username),
+            Text(username),
           ],
         ),
       ),
