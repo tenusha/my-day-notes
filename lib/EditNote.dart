@@ -156,7 +156,8 @@ class _EditNotePageState extends State<EditNotePage> {
             return new IconButton(
               icon: Icon(Icons.share),
               onPressed: () {
-                Share.share(note.text, subject: subject.text);
+                Share.share(
+                    "Subject: " + subject.text + "\n\nNote: " + note.text);
               },
             );
           }),
