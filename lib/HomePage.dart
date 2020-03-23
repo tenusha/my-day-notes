@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:intl/intl.dart';
 import 'package:my_day/AddNote.dart';
+import 'package:my_day/EditNote.dart';
 import 'package:my_day/ThemeData.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -229,7 +230,14 @@ class _HomePageState extends State<HomePage> {
         actionPane: SlidableDrawerActionPane(),
         actionExtentRatio: 0.25,
         child: GestureDetector(
-          onTap: () => print('$subject'),
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => EditNotePage(
+                note: noteObj,
+              ),
+            ),
+          ),
           child: Container(
             color: Colors.white,
             child: ListTile(
@@ -257,7 +265,14 @@ class _HomePageState extends State<HomePage> {
               color: Colors.white,
             ),
             color: themeColor,
-            onTap: () => {},
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => EditNotePage(
+                  note: noteObj,
+                ),
+              ),
+            ),
           ),
         ],
         secondaryActions: <Widget>[

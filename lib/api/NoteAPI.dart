@@ -25,10 +25,10 @@ addNote(String collectionName, Note note) async {
   return true;
 }
 
-updateNote(Note note, Note newNote) {
+updateNote(Note note, var newNote) {
   try {
     Firestore.instance.runTransaction((transaction) async {
-      await transaction.update(note.reference, newNote.toJson());
+      await transaction.update(note.reference, newNote);
     });
   } catch (e) {
     print(e.toString());
